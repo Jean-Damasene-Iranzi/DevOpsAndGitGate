@@ -1,6 +1,7 @@
 package sortingFunctionality;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -49,7 +50,7 @@ public class TestSorting {
             page.selectOption("select[data-test='sort']", value);
 
             // Wait for the container to update
-            page.waitForSelector("[data-test='sorting_completed']");
+            page.waitForLoadState(LoadState.NETWORKIDLE);
 
             // Locate first product
             Locator firstProduct = page.locator("[data-test='product-name']").first();
