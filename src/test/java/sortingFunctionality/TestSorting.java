@@ -49,10 +49,10 @@ public class TestSorting {
             // Select by value
             page.selectOption("select[data-test='sort']", value);
 
-            // Wait for the container to update
+            // Wait for the container to
             page.waitForLoadState(LoadState.NETWORKIDLE);
 
-            // Locate first product on page
+            // Locate first product
             Locator firstProduct = page.locator("[data-test='product-name']").first();
 
             // Wait for visibility
