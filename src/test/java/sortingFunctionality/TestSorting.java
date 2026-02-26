@@ -34,48 +34,22 @@ public class TestSorting{
 
     @Test
     public void testSortingLogic() {
-        // Your original list of values
-        List<String> sortValues = Arrays.asList(
-                "name,asc",
-                "name,desc",
-                "price,desc",
-                "price,asc",
-                "co2_rating,asc",
-                "co2_rating,desc"
-        );
+        List<String> sortValues = Arrays.asList("name,asc", "name,desc", "price,desc", "price,asc", "co2_rating,asc", "co2_rating,desc");
 
         System.out.println("--- Starting Sorting Functionality Test ---");
 
-        for (String value : sortValues) {
-            // Select by value
-            page.selectOption("select[data-test='sort']", value);
+        // ADD THIS LINE: Explicitly wait for the dropdown to appear on the screen
+        page.waitForSelector("select[data-test='sort']", new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
 
-            // Wait for the container to update
+        for (String value : sortValues) {
+            page.selectOption("select[data-test='sort']", value);
             page.waitForSelector("[data-test='sorting_completed']");
 
-            // Locate first product
             Locator firstProduct = page.locator("[data-test='product-name']").first();
-
-            // Wait for visibility
             firstProduct.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
 
             String productText = firstProduct.textContent().trim();
-
-            // Output result
             System.out.println("Sort Value: [" + value + "] -> First Product: " + productText);
-        }
-
-        System.out.println("--- All sorting options tested successfully ---");
-    }
-
-    @AfterClass
-    public void tearDown() {
-        // Safely close the browser
-        if (browser != null) {
-            browser.close();
-        }
-        if (playwright != null) {
-            playwright.close();
         }
     }
 }
