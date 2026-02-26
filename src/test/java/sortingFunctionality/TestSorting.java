@@ -52,7 +52,7 @@ public class TestSorting {
             // Wait for the container to update
             page.waitForLoadState(LoadState.NETWORKIDLE);
 
-            // Locate first product
+            // Locate first product on page
             Locator firstProduct = page.locator("[data-test='product-name']").first();
 
             // Wait for visibility
@@ -60,7 +60,7 @@ public class TestSorting {
 
             String productText = firstProduct.textContent().trim();
 
-            // Output result
+            // Output results
             System.out.println("Sort Value: [" + value + "] -> First Product: " + productText);
         }
 
