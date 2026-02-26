@@ -9,8 +9,8 @@ public class Test {
         for (int i = 1; i <= 10; i++) {
             sum += i;
             count++;
-            System.out.println("Total count: " + count);
-            System.out.println("Next number: " + i);
+            System.out.println("Total count: " + count + "numbers");
+            System.out.println("Next number: " + i + "of count");
             System.out.println("Sum: " + sum);
         }
         System.out.println("Final Total count: " + count);
