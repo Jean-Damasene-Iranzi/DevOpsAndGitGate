@@ -7,12 +7,9 @@ public class Test {
         int sum = 0;
 
         for (int i = 1; i <= 10; i++) {
-            sum += i;
-            count++;
-            System.out.println("Total count: " + count + "numbers");
-            System.out.println("Next number: " + i + "of count");
-            System.out.println("Sum: " + sum);
+               count++;
+               System.out.println("Total Count: " + count + "Numbers");
+               System.out.println("Next Number: " + i + "of Nount");
         }
-        System.out.println("Final Total count: " + count);
     }
 }
