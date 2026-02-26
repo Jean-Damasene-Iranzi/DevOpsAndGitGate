@@ -8,6 +8,7 @@ public class Test {
         for (int i = 1; i <= 10; i++) {
             count++;
             System.out.println("Total count: " + count);
+            System.out.println("Next number: " + i);
         }
     }
 }
