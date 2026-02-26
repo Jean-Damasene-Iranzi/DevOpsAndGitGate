@@ -1,6 +1,7 @@
 package sortingFunctionality;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -28,6 +29,7 @@ public class TestSorting{
         );
         page = browser.newPage();
         page.navigate("https://practicesoftwaretesting.com/");
+        page.waitForLoadState(LoadState.NETWORKIDLE);
     }
 
     @Test
