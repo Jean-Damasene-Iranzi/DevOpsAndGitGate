@@ -46,12 +46,13 @@ public class TestSorting{
 
         System.out.println("--- Starting Sorting Functionality Test ---");
 
+        // Instead of just selecting immediately, wait for the element to be present first
         for (String value : sortValues) {
-            // Select by value
-            page.selectOption("select[data-test='sort']", value);
+            // 1. Explicitly wait for the dropdown to be attached to the page
+            page.waitForSelector("select[data-test='sort']", new Page.WaitForSelectorOptions().setState(WaitForSelectorState.ATTACHED));
 
-            // Wait for the container to update
-            page.waitForSelector("[data-test='sorting_completed']");
+            // 2. Now select the option
+            page.selectOption("select[data-test='sort']", value);
 
             // Locate first product
             Locator firstProduct = page.locator("[data-test='product-name']").first();
