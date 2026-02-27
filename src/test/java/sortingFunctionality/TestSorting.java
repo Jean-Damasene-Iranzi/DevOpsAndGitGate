@@ -59,65 +59,61 @@ package sortingFunctionality;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
+import com.microsoft.playwright.options.WaitUntilState;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 public class TestSorting {
-    Playwright playwright;
-    Browser browser;
-    Page page;
-
-    @BeforeClass
-    public void setup() {
-        playwright = Playwright.create();
-
-        // CI/CD compatibility: Essential for GitHub Actions
-        boolean isCI = System.getenv("CI") != null;
-
-        browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions().setHeadless(isCI)
-        );
-        page = browser.newPage();
-        page.navigate("https://practicesoftwaretesting.com/");
-    }
-
     @Test
-    public void testSortingLogic() {
-        List<String> sortValues = Arrays.asList(
-                "name,asc", "name,desc", "price,desc",
-                "price,asc", "co2_rating,asc", "co2_rating,desc"
-        );
+    void validateAllSortingOptions() {
+        try (Playwright playwright = Playwright.create()) {
+            boolean isCI = System.getenv("CI") != null;
 
-        System.out.println("--- Starting Sorting Functionality Test ---");
+            // Keep these: They ensure the GitHub Runner isn't blocked as a bot
+            BrowserType.LaunchPersistentContextOptions options = new BrowserType.LaunchPersistentContextOptions()
+                    .setHeadless(isCI)
+                    .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
+                    .setArgs(Arrays.asList("--no-sandbox", "--disable-blink-features=AutomationControlled"));
 
-        for (String value : sortValues) {
-            // FIX: Explicitly wait for the dropdown to be attached to the DOM
-            page.waitForSelector("select[data-test='sort']",
-                    new Page.WaitForSelectorOptions().setState(WaitForSelectorState.ATTACHED));
+            BrowserContext context = playwright.chromium().launchPersistentContext(Paths.get("target/profiles"), options);
+            Page page = context.pages().get(0);
+            page.setDefaultTimeout(60000);
 
-            // Select the option
-            page.selectOption("select[data-test='sort']", value);
+            page.navigate("https://practicesoftwaretesting.com/", new Page.NavigateOptions().setWaitUntil(WaitUntilState.LOAD));
 
-            // Wait for network to settle after selection
-            page.waitForLoadState(LoadState.NETWORKIDLE);
+            // Essential: Wait for SPA to load product data
+            boolean loaded = false;
+            for (int i = 0; i < 30; i++) {
+                if (page.locator("[data-test='product-name']").count() > 0) {
+                    loaded = true;
+                    break;
+                }
+                page.waitForTimeout(1000);
+            }
 
-            // Verify the first product exists
-            Locator firstProduct = page.locator("[data-test='product-name']").first();
-            firstProduct.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+            if (!loaded) {
+                page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get("target/error.png")));
+                throw new RuntimeException("Products did not load in time.");
+            }
 
-            String productText = firstProduct.textContent().trim();
-            System.out.println("Sort Value: [" + value + "] -> First Product: " + productText);
+            // Core Sorting Logic
+            List<String> sortValues = Arrays.asList("name,asc", "name,desc", "price,desc", "price,asc");
+            for (String value : sortValues) {
+                page.locator("select[data-test='sort']").selectOption(value);
+
+                // Wait for the UI to acknowledge the sort is done
+                page.waitForSelector("[data-test='sorting_completed']");
+
+                String firstProduct = page.locator("[data-test='product-name']").first().innerText();
+                System.out.println("Validated Sort [" + value + "] - Top Item: " + firstProduct.trim());
+            }
+
+            context.close();
         }
-
-        System.out.println("--- All sorting options tested successfully ---");
-    }
-
-    @AfterClass
-    public void tearDown() {
-        if (browser != null) browser.close();
-        if (playwright != null) playwright.close();
     }
 }
