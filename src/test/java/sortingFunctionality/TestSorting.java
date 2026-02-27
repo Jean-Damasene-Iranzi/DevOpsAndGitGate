@@ -55,15 +55,9 @@
 //}
 
 package sortingFunctionality;
-
 import com.microsoft.playwright.*;
-import com.microsoft.playwright.options.LoadState;
-import com.microsoft.playwright.options.WaitForSelectorState;
 import com.microsoft.playwright.options.WaitUntilState;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
